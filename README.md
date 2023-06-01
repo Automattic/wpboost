@@ -6,7 +6,7 @@ Contains various utility functions. Some of these may potentially go into core a
 
 The most basic idea with adding these functions is to:
 
-1. Improve the developer experience, having these functions directly accessible for usage rather than relying on PHP libraries
+1. Improve the WordPress developer's experience, having these functions directly accessible for usage rather than relying on PHP libraries
 2. Performance improvement. Some brief benchmarks are available here: https://gist.github.com/bor0/3fa539263335fa415faa67606a469f2e
 
 ## Functions
