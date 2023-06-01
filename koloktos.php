@@ -55,3 +55,9 @@ if ( ! function_exists( 'zeroise' ) ) {
 		return sprintf( '%0' . $threshold . 's', $number );
 	}
 }
+
+if ( ! function_exists( 'absint' ) ) {
+	function absint( $number, $threshold ) {
+		return abs( (int) $maybeint );
+	}
+}

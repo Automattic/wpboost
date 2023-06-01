@@ -436,6 +436,27 @@ PHP_FUNCTION(zeroise)
 }
 /* }}} */
 
+/* {{{ Return the absolute value of a number cast to integer */
+PHP_FUNCTION(absint)
+{
+	zval *value;
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_NUMBER(value)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (Z_TYPE_P(value) == IS_DOUBLE) {
+		ZVAL_LONG(value, zend_dval_to_lval(Z_DVAL_P(value)));
+	}
+
+	if (Z_TYPE_P(value) == IS_LONG) {
+		RETURN_LONG(Z_LVAL_P(value) < 0 ? -Z_LVAL_P(value) : Z_LVAL_P(value));
+	} else {
+		ZEND_ASSERT(0 && "Unexpected type");
+	}
+}
+/* }}} */
+
 static PHP_GINIT_FUNCTION(koloktos)
 {
 }
@@ -504,6 +525,10 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_zeroise, 0, 2, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, number, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, threshold, IS_LONG, 0)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_absint, 0, 1, IS_LONG)
+	ZEND_ARG_TYPE_MASK(0, num, MAY_BE_LONG|MAY_BE_DOUBLE, NULL)
+ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ koloktos_functions[]
@@ -518,6 +543,7 @@ static const zend_function_entry koloktos_functions[] = {
 	PHP_FE(array_take_while,  arginfo_array_take_while)
 	PHP_FE(array_drop_while,  arginfo_array_drop_while)
 	PHP_FE(zeroise,           arginfo_zeroise)
+	PHP_FE(absint,            arginfo_absint)
 	PHP_FE_END
 };
 /* }}} */
