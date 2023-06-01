@@ -1,0 +1,7 @@
+ARG_ENABLE('koloktos', 'koloktos support', 'no');
+
+if (PHP_KOLOKTOS != 'no') {
+	AC_DEFINE('HAVE_KOLOKTOS', 1, 'koloktos support enabled');
+
+	EXTENSION('koloktos', 'koloktos.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+}
