@@ -5,17 +5,16 @@ Test absint() function : basic functionality
 echo "*** Testing absint() : basic functionality ***\n";
 
 $tests = array(
-	array( -1, 1 ),
-	array( 0, 0 ),
-	array( 1, 1 ),
-	array( '-1', 1 ),
-	array( '1', 1 ),
-	array( 1.0, 1 ),
-	array( -1.0, 1 ),
+	-1,
+	0,
+	1,
+	'-1',
+	'1',
+	1.0,
+	-1.0,
 );
 
-foreach ( $tests as $test ) {
-	list( $arg, $expected ) = $test;
+foreach ( $tests as $arg ) {
 	printf( "Testing absint(%s) = %s\n", $arg, absint($arg));
 }
 
