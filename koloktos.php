@@ -15,7 +15,7 @@ function array_every(array $array, callable $callback): bool {
 }
 
 if ( ! function_exists( 'array_some' ) ) {
-	function custom_array_some( array $array, callable $callable ) {
+	function array_some( array $array, callable $callable ) {
 		if ( empty( $array ) ) {
 			return array();
 		}
