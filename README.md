@@ -22,6 +22,7 @@ function array_take_while(array $array, callable $callback): array {}
 function array_drop_while(array $array, callable $callback): array {}
 function zeroise(int $number, int $threshold): string {}
 function absint(int|double $maybeint): int {}
+function wp_slash(mixed $value): mixed {}
 ```
 
 The filename `koloktos.php` contains polyfills in PHP.

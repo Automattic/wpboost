@@ -61,3 +61,17 @@ if ( ! function_exists( 'absint' ) ) {
 		return abs( (int) $maybeint );
 	}
 }
+
+if ( ! function_exists( 'wp_slash' ) ) {
+	function wp_slash( $value ) {
+		if ( is_array( $value ) ) {
+			$value = array_map( 'wp_slash', $value );
+		}
+
+		if ( is_string( $value ) ) {
+			return addslashes( $value );
+		}
+
+		return $value;
+	}
+}

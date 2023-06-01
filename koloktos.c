@@ -6,6 +6,7 @@
 
 #include "php.h"
 #include "ext/standard/info.h"
+#include "ext/standard/php_string.h"
 
 #include "koloktos.h"
 
@@ -457,6 +458,59 @@ PHP_FUNCTION(absint)
 }
 /* }}} */
 
+/* {{{ Return the absolute value of a number cast to integer */
+PHP_FUNCTION(wp_slash)
+{
+	zend_fcall_info fci;
+	zend_fcall_info_cache fci_cache = empty_fcall_info_cache;
+
+	zval retval;
+	zval *value;
+	zval args[2];
+
+	ZEND_PARSE_PARAMETERS_START(1, 1)
+		Z_PARAM_ZVAL(value)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (Z_TYPE_P(value) == IS_ARRAY) {
+		zend_string *array_map = zend_string_init_fast("array_map", sizeof("array_map")-1);
+		zend_string *wp_slash  = zend_string_init_fast("wp_slash", sizeof("wp_slash")-1);
+
+		ZVAL_STR(&args[0], wp_slash);
+		ZVAL_COPY(&args[1], value);
+
+		fci.size = sizeof(fci);
+		fci.retval = &retval;
+		fci.param_count = 2;
+		ZVAL_STR(&fci.function_name, array_map);
+		fci.params = args;
+		fci.named_params = NULL;
+		fci.object = NULL;
+
+		if (zend_call_function(&fci, &fci_cache) == SUCCESS && Z_TYPE(retval) != IS_UNDEF) {
+			zval_ptr_dtor(&args[0]);
+			zval_ptr_dtor(&args[1]);
+			zval_ptr_dtor(&fci.function_name);
+
+			ZVAL_COPY(return_value, &retval);
+
+			zval_ptr_dtor(&retval);
+		} else {
+			zval_ptr_dtor(&args[0]);
+			zval_ptr_dtor(&args[1]);
+			zval_ptr_dtor(&fci.function_name);
+			RETURN_NULL();
+		}
+	} else if (Z_TYPE_P(value) == IS_STRING) {
+		zend_string *buf = php_addslashes(Z_STR_P(value));
+		zval_ptr_dtor(value);
+		RETVAL_STR(buf);
+	} else {
+		RETVAL_COPY(value);
+	}
+}
+/* }}} */
+
 static PHP_GINIT_FUNCTION(koloktos)
 {
 }
@@ -527,7 +581,11 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_zeroise, 0, 2, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_absint, 0, 1, IS_LONG)
-	ZEND_ARG_TYPE_MASK(0, num, MAY_BE_LONG|MAY_BE_DOUBLE, NULL)
+	ZEND_ARG_TYPE_MASK(0, value, MAY_BE_LONG|MAY_BE_DOUBLE, NULL)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_wp_slash, 0, 1, IS_MIXED)
+	ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 /* }}} */
 
@@ -544,6 +602,7 @@ static const zend_function_entry koloktos_functions[] = {
 	PHP_FE(array_drop_while,  arginfo_array_drop_while)
 	PHP_FE(zeroise,           arginfo_zeroise)
 	PHP_FE(absint,            arginfo_absint)
+	PHP_FE(wp_slash,          arginfo_wp_slash)
 	PHP_FE_END
 };
 /* }}} */
