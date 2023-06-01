@@ -498,7 +498,6 @@ PHP_FUNCTION(wp_slash)
 		}
 	} else if (Z_TYPE_P(value) == IS_STRING) {
 		zend_string *buf = php_addslashes(Z_STR_P(value));
-		zval_ptr_dtor(value);
 		RETVAL_STR(buf);
 	} else {
 		RETVAL_COPY(value);
@@ -579,7 +578,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_absint, 0, 1, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_wp_slash, 0, 1, IS_MIXED)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_wp_slash, 0, 1, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 /* }}} */
