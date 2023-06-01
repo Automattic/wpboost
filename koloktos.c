@@ -6,6 +6,7 @@
 
 #include "php.h"
 #include "ext/standard/info.h"
+
 #include "koloktos.h"
 
 /* For compatibility with older PHP versions */
@@ -407,6 +408,34 @@ PHP_FUNCTION(array_drop_while)
 }
 /* }}} */
 
+/* {{{ Return a formatted string */
+PHP_FUNCTION(zeroise)
+{
+	zend_long number, threshold;
+	char *format, *format2;
+	zend_string *result;
+	size_t format_len;
+
+	ZEND_PARSE_PARAMETERS_START(2, 2)
+		Z_PARAM_LONG(number)
+		Z_PARAM_LONG(threshold)
+	ZEND_PARSE_PARAMETERS_END();
+
+	zend_spprintf(&format, 0, "%%0%lldd", threshold);
+	format_len = zend_spprintf(&format2, 0, format, number);
+
+	result = zend_string_init_fast(format2, format_len);
+
+	efree(format);
+	efree(format2);
+
+	if (result == NULL) {
+		RETURN_THROWS();
+	}
+	RETVAL_STR(result);
+}
+/* }}} */
+
 static PHP_GINIT_FUNCTION(koloktos)
 {
 }
@@ -470,6 +499,11 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_array_drop_while, 0, 2, IS_ARRAY
 	ZEND_ARG_TYPE_INFO(0, array, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_zeroise, 0, 2, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, number, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, threshold, IS_LONG, 0)
+ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ koloktos_functions[]
@@ -483,6 +517,7 @@ static const zend_function_entry koloktos_functions[] = {
 	PHP_FE(array_ends_with,   arginfo_array_ends_with)
 	PHP_FE(array_take_while,  arginfo_array_take_while)
 	PHP_FE(array_drop_while,  arginfo_array_drop_while)
+	PHP_FE(zeroise,           arginfo_zeroise)
 	PHP_FE_END
 };
 /* }}} */

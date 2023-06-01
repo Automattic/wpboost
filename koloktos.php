@@ -38,3 +38,9 @@ if ( ! function_exists( 'array_drop_while' ) ) {
 function array_drop_while(array $array, callable $callback): array {
 }
 }
+
+if ( ! function_exists( 'zeroise' ) ) {
+	function zeroise( $number, $threshold ) {
+		return sprintf( '%0' . $threshold . 's', $number );
+	}
+}
