@@ -15,8 +15,19 @@ function array_every(array $array, callable $callback): bool {
 }
 
 if ( ! function_exists( 'array_some' ) ) {
-function array_some(array $array, callable $callback): bool {
-}
+	function custom_array_some( array $array, callable $callable ) {
+		if ( empty( $array ) ) {
+			return array();
+		}
+
+		foreach ( $array as $element ) {
+			if ( $callable( $element ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
 }
 
 if ( ! function_exists( 'array_starts_with' ) ) {
