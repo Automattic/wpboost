@@ -441,20 +441,15 @@ PHP_FUNCTION(zeroise)
 PHP_FUNCTION(absint)
 {
 	zval *value;
+	zend_long retval;
 
 	ZEND_PARSE_PARAMETERS_START(1, 1)
-		Z_PARAM_NUMBER(value)
+		Z_PARAM_ZVAL(value)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (Z_TYPE_P(value) == IS_DOUBLE) {
-		ZVAL_LONG(value, zend_dval_to_lval(Z_DVAL_P(value)));
-	}
+	retval = zval_get_long(value);
 
-	if (Z_TYPE_P(value) == IS_LONG) {
-		RETURN_LONG(Z_LVAL_P(value) < 0 ? -Z_LVAL_P(value) : Z_LVAL_P(value));
-	} else {
-		ZEND_ASSERT(0 && "Unexpected type");
-	}
+	RETVAL_LONG(retval < 0 ? -retval : retval);
 }
 /* }}} */
 
@@ -580,8 +575,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_zeroise, 0, 2, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, threshold, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_absint, 0, 1, IS_LONG)
-	ZEND_ARG_TYPE_MASK(0, value, MAY_BE_LONG|MAY_BE_DOUBLE, NULL)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_absint, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_wp_slash, 0, 1, IS_MIXED)

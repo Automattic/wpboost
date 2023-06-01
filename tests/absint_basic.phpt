@@ -12,6 +12,7 @@ $tests = array(
 	'1',
 	1.0,
 	-1.0,
+	'123a',
 );
 
 foreach ( $tests as $arg ) {
@@ -29,4 +30,5 @@ Testing absint(-1) = 1
 Testing absint(1) = 1
 Testing absint(1) = 1
 Testing absint(-1) = 1
+Testing absint(123a) = 123
 Done
