@@ -18,10 +18,6 @@ ZEND_END_MODULE_GLOBALS(wpboost)
 
 ZEND_EXTERN_MODULE_GLOBALS(wpboost)
 
-#define ZEND_HASH_FOREACH_VAL_FROM(ht, _val, _from) \
-       ZEND_HASH_FOREACH_FROM(ht, 0, _from); \
-       _val = _z;
-
 #define WPBOOST_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(wpboost, v)
 
 #endif	/* PHP_WPBOOST_H */
