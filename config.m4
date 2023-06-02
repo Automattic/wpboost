@@ -1,4 +1,4 @@
-dnl config.m4 for extension koloktos
+dnl config.m4 for extension wpboost
 
 dnl Comments in this file start with the string 'dnl'.
 dnl Remove where necessary.
@@ -12,13 +12,13 @@ dnl     [Include test support])])
 
 dnl Otherwise use 'enable':
 
-PHP_ARG_ENABLE([koloktos],
-  [whether to enable koloktos support],
-  [AS_HELP_STRING([--enable-koloktos],
-    [Enable koloktossupport])],
+PHP_ARG_ENABLE([wpboost],
+  [whether to enable wpboost support],
+  [AS_HELP_STRING([--enable-wpboost],
+    [Enable wpboostsupport])],
   [no])
 
-if test "$PHP_KOLOKTOS" != "no"; then
+if test "$PHP_WPBOOST" != "no"; then
   dnl Write more examples of tests here...
 
   dnl Remove this code block if the library does not support pkg-config.
@@ -88,7 +88,7 @@ if test "$PHP_KOLOKTOS" != "no"; then
   dnl PHP_SUBST(TEST_SHARED_LIBADD)
 
   dnl In case of no dependencies
-  AC_DEFINE(HAVE_KOLOKTOS, 1, [ Have koloktos support ])
+  AC_DEFINE(HAVE_WPBOOST, 1, [ Have wpboost support ])
 
-  PHP_NEW_EXTENSION(koloktos, koloktos.c, $ext_shared)
+  PHP_NEW_EXTENSION(wpboost, wpboost.c, $ext_shared)
 fi

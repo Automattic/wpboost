@@ -1,7 +1,7 @@
-ARG_ENABLE('koloktos', 'koloktos support', 'no');
+ARG_ENABLE('wpboost', 'wpboost support', 'no');
 
-if (PHP_KOLOKTOS != 'no') {
-	AC_DEFINE('HAVE_KOLOKTOS', 1, 'koloktos support enabled');
+if (PHP_WPBOOST != 'no') {
+	AC_DEFINE('HAVE_WPBOOST', 1, 'wpboost support enabled');
 
-	EXTENSION('koloktos', 'koloktos.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
+	EXTENSION('wpboost', 'wpboost.c', null, '/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1');
 }

@@ -1,4 +1,4 @@
-/* koloktos extension for PHP */
+/* wpboost extension for PHP */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -8,7 +8,7 @@
 #include "ext/standard/info.h"
 #include "ext/standard/php_string.h"
 
-#include "koloktos.h"
+#include "wpboost.h"
 
 /* For compatibility with older PHP versions */
 #ifndef ZEND_PARSE_PARAMETERS_NONE
@@ -17,7 +17,7 @@
 	ZEND_PARSE_PARAMETERS_END()
 #endif
 
-ZEND_DECLARE_MODULE_GLOBALS(koloktos)
+ZEND_DECLARE_MODULE_GLOBALS(wpboost)
 
 /* {{{ Groups elements from the array via the callback. */
 PHP_FUNCTION(array_group)
@@ -505,13 +505,13 @@ PHP_FUNCTION(wp_slash)
 }
 /* }}} */
 
-static PHP_GINIT_FUNCTION(koloktos)
+static PHP_GINIT_FUNCTION(wpboost)
 {
 }
 
 /* {{{ PHP_MINIT_FUNCTION
  */
-PHP_MINIT_FUNCTION(koloktos)
+PHP_MINIT_FUNCTION(wpboost)
 {
 	return SUCCESS;
 }
@@ -519,10 +519,10 @@ PHP_MINIT_FUNCTION(koloktos)
 
 /* {{{ PHP_MINFO_FUNCTION
  */
-PHP_MINFO_FUNCTION(koloktos)
+PHP_MINFO_FUNCTION(wpboost)
 {
 	php_info_print_table_start();
-	php_info_print_table_header(2, "koloktos support", "enabled");
+	php_info_print_table_header(2, "wpboost support", "enabled");
 	php_info_print_table_end();
 }
 /* }}} */
@@ -583,9 +583,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_wp_slash, 0, 1, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 /* }}} */
 
-/* {{{ koloktos_functions[]
+/* {{{ wpboost_functions[]
  */
-static const zend_function_entry koloktos_functions[] = {
+static const zend_function_entry wpboost_functions[] = {
 	PHP_FE(array_group,       arginfo_array_group)
 	PHP_FE(array_group_pair,  arginfo_array_group_pair)
 	PHP_FE(array_every,       arginfo_array_every)
@@ -601,29 +601,29 @@ static const zend_function_entry koloktos_functions[] = {
 };
 /* }}} */
 
-/* {{{ koloktos_module_entry
+/* {{{ wpboost_module_entry
  */
-zend_module_entry koloktos_module_entry = {
+zend_module_entry wpboost_module_entry = {
 	STANDARD_MODULE_HEADER,
-	"koloktos",                   /* Extension name */
-	koloktos_functions,           /* zend_function_entry */
-	PHP_MINIT(koloktos),          /* PHP_MINIT - Module initialization */
-	NULL,                         /* PHP_MSHUTDOWN - Module shutdown */
-	NULL,                         /* PHP_RINIT - Request initialization */
-	NULL,                         /* PHP_RSHUTDOWN - Request shutdown */
-	PHP_MINFO(koloktos),          /* PHP_MINFO - Module info */
-	PHP_KOLOKTOS_VERSION,         /* Version */
-	PHP_MODULE_GLOBALS(koloktos), /* Module globals */
-	PHP_GINIT(koloktos),          /* PHP_GINIT - Globals initialization */
-	NULL,                         /* PHP_GSHUTDOWN - Globals shutdown */
+	"wpboost",                   /* Extension name */
+	wpboost_functions,           /* zend_function_entry */
+	PHP_MINIT(wpboost),          /* PHP_MINIT - Module initialization */
+	NULL,                        /* PHP_MSHUTDOWN - Module shutdown */
+	NULL,                        /* PHP_RINIT - Request initialization */
+	NULL,                        /* PHP_RSHUTDOWN - Request shutdown */
+	PHP_MINFO(wpboost),          /* PHP_MINFO - Module info */
+	PHP_WPBOOST_VERSION,         /* Version */
+	PHP_MODULE_GLOBALS(wpboost), /* Module globals */
+	PHP_GINIT(wpboost),          /* PHP_GINIT - Globals initialization */
+	NULL,                        /* PHP_GSHUTDOWN - Globals shutdown */
 	NULL,
 	STANDARD_MODULE_PROPERTIES_EX
 };
 /* }}} */
 
-#ifdef COMPILE_DL_KOLOKTOS
+#ifdef COMPILE_DL_WPBOOST
 #ifdef ZTS
 ZEND_TSRMLS_CACHE_DEFINE()
 #endif
-ZEND_GET_MODULE(koloktos)
+ZEND_GET_MODULE(wpboost)
 #endif
