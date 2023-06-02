@@ -6,8 +6,6 @@ Contains various WordPress utility functions.
 
 The most basic idea with adding these functions is to improve performance.
 
-The filename `wpboost.php` contains polyfills in PHP.
-
 ## Building
 
 To build:
