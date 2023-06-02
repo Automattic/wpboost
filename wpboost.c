@@ -7,6 +7,7 @@
 #include "php.h"
 #include "ext/standard/info.h"
 #include "ext/standard/php_string.h"
+#include "ext/standard/php_var.h" // php_var_dump
 
 #include "wpboost.h"
 
@@ -115,6 +116,51 @@ PHP_FUNCTION(wp_slash)
 }
 /* }}} */
 
+/* {{{ Return the absolute value of a number cast to integer */
+PHP_FUNCTION(_wp_array_get)
+{
+	zval *input_array;
+	zval *path;
+	zval *default_value = NULL;
+
+	zval *entry;
+
+	ZEND_PARSE_PARAMETERS_START(2, 3)
+		Z_PARAM_ZVAL(input_array)
+		Z_PARAM_ARRAY(path)
+		Z_PARAM_OPTIONAL
+		Z_PARAM_ZVAL(default_value)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (Z_TYPE_P(input_array) != IS_ARRAY || zend_hash_num_elements(Z_ARRVAL_P(input_array)) == 0) {
+		if (default_value) {
+			RETURN_COPY_VALUE(default_value);
+		}
+		RETURN_NULL();
+	}
+
+	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(path), entry) {
+		if (Z_TYPE_P(input_array) != IS_ARRAY) {
+			if (default_value) {
+				RETURN_COPY_VALUE(default_value);
+			}
+			RETURN_NULL();
+		}
+
+		input_array = zend_hash_find(Z_ARRVAL_P(input_array), Z_STR_P(entry));
+
+		if (!input_array) {
+			if (default_value) {
+				RETURN_COPY_VALUE(default_value);
+			}
+			RETURN_NULL();
+		}
+	} ZEND_HASH_FOREACH_END();
+	RETVAL_COPY(input_array);
+}
+
+/* }}} */
+
 static PHP_GINIT_FUNCTION(wpboost)
 {
 }
@@ -151,6 +197,12 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_wp_slash, 0, 1, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_wp_array_get, 0, 2, IS_MIXED, 1)
+	ZEND_ARG_TYPE_INFO(0, input_array, IS_MIXED, 0)
+	ZEND_ARG_TYPE_INFO(0, path, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, default_value, IS_MIXED, 0, "null")
+ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ wpboost_functions[]
@@ -159,6 +211,7 @@ static const zend_function_entry wpboost_functions[] = {
 	PHP_FE(zeroise,           arginfo_zeroise)
 	PHP_FE(absint,            arginfo_absint)
 	PHP_FE(wp_slash,          arginfo_wp_slash)
+	PHP_FE(_wp_array_get,     arginfo_wp_array_get)
 	PHP_FE_END
 };
 /* }}} */
