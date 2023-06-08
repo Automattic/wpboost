@@ -245,7 +245,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_wp_slash, 0, 1, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_wp_array_get, 0, 2, IS_MIXED, 1)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo__wp_array_get, 0, 2, IS_MIXED, 1)
 	ZEND_ARG_TYPE_INFO(0, input_array, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO(0, path, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, default_value, IS_MIXED, 0, "null")
@@ -264,7 +264,7 @@ static const zend_function_entry wpboost_functions[] = {
 	PHP_FE(zeroise,                    arginfo_zeroise)
 	PHP_FE(absint,                     arginfo_absint)
 	PHP_FE(wp_slash,                   arginfo_wp_slash)
-	PHP_FE(_wp_array_get,              arginfo_wp_array_get)
+	PHP_FE(_wp_array_get,              arginfo__wp_array_get)
 	PHP_FE(_wp_filter_build_unique_id, arginfo__wp_filter_build_unique_id)
 	PHP_FE_END
 };
