@@ -8,6 +8,7 @@
 #include "ext/standard/info.h"
 #include "ext/standard/php_string.h"
 #include "ext/standard/php_var.h" // php_var_dump
+#include "ext/spl/php_spl.h"
 
 #include "wpboost.h"
 
@@ -159,7 +160,52 @@ PHP_FUNCTION(_wp_array_get)
 	} ZEND_HASH_FOREACH_END();
 	RETVAL_COPY(input_array);
 }
+/* }}} */
 
+/* {{{ Builds Unique ID for storage and retrieval */
+PHP_FUNCTION(_wp_filter_build_unique_id)
+{
+	zval retval;
+	zend_string *hook_name, *priority;
+	zval *callback;
+	zval *prop1, *prop2;
+
+	ZEND_PARSE_PARAMETERS_START(3, 3)
+		Z_PARAM_STR(hook_name)
+		Z_PARAM_ZVAL(callback)
+		Z_PARAM_STR(priority)
+	ZEND_PARSE_PARAMETERS_END();
+
+	if (Z_TYPE_P(callback) == IS_STRING) {
+		RETURN_COPY_VALUE(callback);
+	} else if (Z_TYPE_P(callback) == IS_OBJECT) {
+		RETURN_STR(php_spl_object_hash(Z_OBJ_P(callback)));
+	} else if (Z_TYPE_P(callback) == IS_ARRAY) {
+		prop1 = zend_hash_index_find(Z_ARRVAL_P(callback), 0);
+		if (prop1) {
+			prop2 = zend_hash_index_find(Z_ARRVAL_P(callback), 1);
+			if (Z_TYPE_P(prop2) == IS_STRING) {
+				if (Z_TYPE_P(prop1) == IS_OBJECT) {
+					zend_string *prop1hash = php_spl_object_hash(Z_OBJ_P(callback));
+					zend_string *prop12 = zend_string_concat2(
+						ZSTR_VAL(prop1hash), ZSTR_LEN(prop1hash),
+						ZSTR_VAL(Z_STR_P(prop2)), ZSTR_LEN(Z_STR_P(prop2)));
+
+					zend_string_release(prop1hash);
+
+					RETURN_STR(prop12);
+				} else if (Z_TYPE_P(prop1) == IS_STRING) {
+					zend_string *prop12 = zend_string_concat3(
+						ZSTR_VAL(Z_STR_P(prop1)), ZSTR_LEN(Z_STR_P(prop1)),
+						"::", sizeof("::")-1,
+						ZSTR_VAL(Z_STR_P(prop2)), ZSTR_LEN(Z_STR_P(prop2)));
+
+					RETURN_STR(prop12);
+				}
+			}
+		}
+	}
+}
 /* }}} */
 
 static PHP_GINIT_FUNCTION(wpboost)
@@ -204,15 +250,22 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_wp_array_get, 0, 2, IS_MIXED, 1)
 	ZEND_ARG_TYPE_INFO(0, path, IS_ARRAY, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, default_value, IS_MIXED, 0, "null")
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo__wp_filter_build_unique_id, 0, 3, IS_STRING, 1)
+	ZEND_ARG_TYPE_INFO(0, hook_name, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, callback, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, priority, IS_LONG, 0)
+ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ wpboost_functions[]
  */
 static const zend_function_entry wpboost_functions[] = {
-	PHP_FE(zeroise,           arginfo_zeroise)
-	PHP_FE(absint,            arginfo_absint)
-	PHP_FE(wp_slash,          arginfo_wp_slash)
-	PHP_FE(_wp_array_get,     arginfo_wp_array_get)
+	PHP_FE(zeroise,                    arginfo_zeroise)
+	PHP_FE(absint,                     arginfo_absint)
+	PHP_FE(wp_slash,                   arginfo_wp_slash)
+	PHP_FE(_wp_array_get,              arginfo_wp_array_get)
+	PHP_FE(_wp_filter_build_unique_id, arginfo__wp_filter_build_unique_id)
 	PHP_FE_END
 };
 /* }}} */
