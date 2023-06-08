@@ -64,7 +64,7 @@ PHP_FUNCTION(absint)
 }
 /* }}} */
 
-/* {{{ Return the absolute value of a number cast to integer */
+/* {{{ Adds slashes to a string or recursively adds slashes to strings within an array */
 PHP_FUNCTION(wp_slash)
 {
 	zend_fcall_info fci;
@@ -79,6 +79,7 @@ PHP_FUNCTION(wp_slash)
 	ZEND_PARSE_PARAMETERS_END();
 
 	if (Z_TYPE_P(value) == IS_ARRAY) {
+		// TODO: ZVAL_STRING(&a, "foo")
 		zend_string *array_map = zend_string_init_fast("array_map", sizeof("array_map")-1);
 		zend_string *wp_slash  = zend_string_init_fast("wp_slash", sizeof("wp_slash")-1);
 
@@ -116,7 +117,7 @@ PHP_FUNCTION(wp_slash)
 }
 /* }}} */
 
-/* {{{ Return the absolute value of a number cast to integer */
+/* {{{ Accesses an array in depth based on a path of keys */
 PHP_FUNCTION(_wp_array_get)
 {
 	zval *input_array;
