@@ -80,35 +80,27 @@ PHP_FUNCTION(wp_slash)
 	ZEND_PARSE_PARAMETERS_END();
 
 	if (Z_TYPE_P(value) == IS_ARRAY) {
-		// TODO: ZVAL_STRING(&a, "foo")
-		zend_string *array_map = zend_string_init_fast("array_map", sizeof("array_map")-1);
-		zend_string *wp_slash  = zend_string_init_fast("wp_slash", sizeof("wp_slash")-1);
-
-		ZVAL_STR(&args[0], wp_slash);
+		ZVAL_STRING(&args[0], "wp_slash");
 		ZVAL_COPY(&args[1], value);
 
 		fci.size = sizeof(fci);
 		fci.retval = &retval;
 		fci.param_count = 2;
-		ZVAL_STR(&fci.function_name, array_map);
+		ZVAL_STRING(&fci.function_name, "array_map");
 		fci.params = args;
 		fci.named_params = NULL;
 		fci.object = NULL;
 
 		if (zend_call_function(&fci, &fci_cache) == SUCCESS && Z_TYPE(retval) != IS_UNDEF) {
-			zval_ptr_dtor(&args[0]);
-			zval_ptr_dtor(&args[1]);
-			zval_ptr_dtor(&fci.function_name);
-
 			ZVAL_COPY(return_value, &retval);
-
 			zval_ptr_dtor(&retval);
 		} else {
-			zval_ptr_dtor(&args[0]);
-			zval_ptr_dtor(&args[1]);
-			zval_ptr_dtor(&fci.function_name);
-			RETURN_NULL();
+			RETVAL_NULL();
 		}
+
+		zval_ptr_dtor(&args[0]);
+		zval_ptr_dtor(&args[1]);
+		zval_ptr_dtor(&fci.function_name);
 	} else if (Z_TYPE_P(value) == IS_STRING) {
 		zend_string *buf = php_addslashes(Z_STR_P(value));
 		RETVAL_STR(buf);
@@ -205,14 +197,13 @@ PHP_FUNCTION(_wp_filter_build_unique_id)
 		}
 
 		// prop1 is set, prop2 is set, prop2 is string
+		while (Z_TYPE_P(prop1) == IS_REFERENCE) {
+			prop1 = Z_REFVAL_P(prop1);
+		}
+
 		switch (Z_TYPE_P(prop1)) {
 			case IS_OBJECT:
 				prop1hash = php_spl_object_hash(Z_OBJ_P(prop1));
-				break;
-			case IS_REFERENCE:
-				ZVAL_DEREF(prop1);
-				// TODO: object cast
-				prop1hash = php_spl_object_hash((zend_object *)Z_REF_P(prop1));
 				break;
 			case IS_STRING:
 				prop1hash = zend_string_concat2(
