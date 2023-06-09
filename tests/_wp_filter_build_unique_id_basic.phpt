@@ -28,7 +28,7 @@ echo "Done";
 *** Testing _wp_filter_build_unique_id() : basic functionality ***
 Testing _wp_filter_build_unique_id("", "foobar", "") = "foobar"
 Testing _wp_filter_build_unique_id("", {"a":1,"b":2}, "") = "00000000000000010000000000000000"
-Testing _wp_filter_build_unique_id("", [{"a":1,"b":2},"bar"], "") = "00000000000000140000000000000000bar"
+Testing _wp_filter_build_unique_id("", [{"a":1,"b":2},"bar"], "") = "00000000000000010000000000000000bar"
 Testing _wp_filter_build_unique_id("", ["foo","bar"], "") = "foo::bar"
 Testing _wp_filter_build_unique_id("", [{"a":1,"b":2},{"a":1,"b":2}], "") = null
 Done

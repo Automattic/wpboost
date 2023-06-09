@@ -176,10 +176,10 @@ PHP_FUNCTION(_wp_array_get)
 /* {{{ Builds Unique ID for storage and retrieval */
 PHP_FUNCTION(_wp_filter_build_unique_id)
 {
-	zval retval;
 	zend_string *hook_name, *priority;
 	zval *callback;
 	zval *prop1, *prop2;
+	zend_string *prop1hash;
 
 	ZEND_PARSE_PARAMETERS_START(3, 3)
 		Z_PARAM_STR(hook_name)
@@ -188,33 +188,46 @@ PHP_FUNCTION(_wp_filter_build_unique_id)
 	ZEND_PARSE_PARAMETERS_END();
 
 	if (Z_TYPE_P(callback) == IS_STRING) {
-		RETURN_COPY_VALUE(callback);
+		RETURN_COPY(callback);
 	} else if (Z_TYPE_P(callback) == IS_OBJECT) {
-		RETURN_STR(php_spl_object_hash(Z_OBJ_P(callback)));
+		RETURN_STR_COPY(php_spl_object_hash(Z_OBJ_P(callback)));
 	} else if (Z_TYPE_P(callback) == IS_ARRAY) {
 		prop1 = zend_hash_index_find(Z_ARRVAL_P(callback), 0);
-		if (prop1) {
-			prop2 = zend_hash_index_find(Z_ARRVAL_P(callback), 1);
-			if (Z_TYPE_P(prop2) == IS_STRING) {
-				if (Z_TYPE_P(prop1) == IS_OBJECT) {
-					zend_string *prop1hash = php_spl_object_hash(Z_OBJ_P(callback));
-					zend_string *prop12 = zend_string_concat2(
-						ZSTR_VAL(prop1hash), ZSTR_LEN(prop1hash),
-						ZSTR_VAL(Z_STR_P(prop2)), ZSTR_LEN(Z_STR_P(prop2)));
 
-					zend_string_release(prop1hash);
-
-					RETURN_STR(prop12);
-				} else if (Z_TYPE_P(prop1) == IS_STRING) {
-					zend_string *prop12 = zend_string_concat3(
-						ZSTR_VAL(Z_STR_P(prop1)), ZSTR_LEN(Z_STR_P(prop1)),
-						"::", sizeof("::")-1,
-						ZSTR_VAL(Z_STR_P(prop2)), ZSTR_LEN(Z_STR_P(prop2)));
-
-					RETURN_STR(prop12);
-				}
-			}
+		if (!prop1) {
+			return;
 		}
+
+		prop2 = zend_hash_index_find(Z_ARRVAL_P(callback), 1);
+
+		if (Z_TYPE_P(prop2) != IS_STRING) {
+			return;
+		}
+
+		// prop1 is set, prop2 is set, prop2 is string
+		switch (Z_TYPE_P(prop1)) {
+			case IS_OBJECT:
+				prop1hash = php_spl_object_hash(Z_OBJ_P(prop1));
+				break;
+			case IS_REFERENCE:
+				ZVAL_DEREF(prop1);
+				// TODO: object cast
+				prop1hash = php_spl_object_hash((zend_object *)Z_REF_P(prop1));
+				break;
+			case IS_STRING:
+				prop1hash = zend_string_concat2(
+					ZSTR_VAL(Z_STR_P(prop1)), ZSTR_LEN(Z_STR_P(prop1)),
+					"::", sizeof("::")-1);
+				break;
+			default:
+				return;
+		}
+
+		zend_string *prop12 = zend_string_concat2(
+			ZSTR_VAL(prop1hash), ZSTR_LEN(prop1hash),
+			ZSTR_VAL(Z_STR_P(prop2)), ZSTR_LEN(Z_STR_P(prop2)));
+
+		RETURN_STR(prop12);
 	}
 }
 /* }}} */
