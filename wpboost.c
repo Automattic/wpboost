@@ -125,37 +125,48 @@ PHP_FUNCTION(_wp_array_get)
 	zval *path;
 	zval *default_value = NULL;
 
-	zval *entry;
+	zval *path_element;
 
 	ZEND_PARSE_PARAMETERS_START(2, 3)
 		Z_PARAM_ZVAL(input_array)
-		Z_PARAM_ARRAY(path)
+		Z_PARAM_ZVAL(path)
 		Z_PARAM_OPTIONAL
 		Z_PARAM_ZVAL(default_value)
 	ZEND_PARSE_PARAMETERS_END();
 
-	if (Z_TYPE_P(input_array) != IS_ARRAY || zend_hash_num_elements(Z_ARRVAL_P(input_array)) == 0) {
-		if (default_value) {
-			RETURN_COPY_VALUE(default_value);
-		}
-		RETURN_NULL();
+	if (default_value != NULL) {
+		ZVAL_COPY(return_value, default_value);
+	} else {
+		ZVAL_NULL(return_value);
 	}
 
-	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(path), entry) {
+	if (Z_TYPE_P(path) != IS_ARRAY || zend_hash_num_elements(Z_ARRVAL_P(path)) == 0) {
+		return;
+	}
+
+	ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(path), path_element) {
+		ZVAL_DEREF(input_array);
+
 		if (Z_TYPE_P(input_array) != IS_ARRAY) {
-			if (default_value) {
-				RETURN_COPY_VALUE(default_value);
-			}
-			RETURN_NULL();
+			return;
 		}
 
-		input_array = zend_hash_find(Z_ARRVAL_P(input_array), Z_STR_P(entry));
+		switch (Z_TYPE_P(path_element)) {
+			case IS_STRING:
+				input_array = zend_symtable_find(Z_ARRVAL_P(input_array), Z_STR_P(path_element));
+				break;
+			case IS_LONG:
+				input_array = zend_hash_index_find(Z_ARRVAL_P(input_array), Z_LVAL_P(path_element));
+				break;
+			case IS_NULL:
+				input_array = zend_hash_find(Z_ARRVAL_P(input_array), ZSTR_EMPTY_ALLOC());
+				break;
+			default:
+				input_array = NULL;
+		}
 
 		if (!input_array) {
-			if (default_value) {
-				RETURN_COPY_VALUE(default_value);
-			}
-			RETURN_NULL();
+			return;
 		}
 	} ZEND_HASH_FOREACH_END();
 	RETVAL_COPY(input_array);
@@ -247,7 +258,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo__wp_array_get, 0, 2, IS_MIXED, 1)
 	ZEND_ARG_TYPE_INFO(0, input_array, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, path, IS_ARRAY, 0)
+	ZEND_ARG_TYPE_INFO(0, path, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, default_value, IS_MIXED, 0, "null")
 ZEND_END_ARG_INFO()
 
