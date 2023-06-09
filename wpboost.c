@@ -55,7 +55,7 @@ PHP_FUNCTION(absint)
 	zval *value;
 	zend_long retval;
 
-	ZEND_PARSE_PARAMETERS_START(1, 1)
+	ZEND_PARSE_PARAMETERS_START(1, -1)
 		Z_PARAM_ZVAL(value)
 	ZEND_PARSE_PARAMETERS_END();
 
